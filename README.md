@@ -15,13 +15,13 @@ There's no separate `apialerts-java` artifact. But you don't need one — the **
 <dependency>
     <groupId>com.apialerts</groupId>
     <artifactId>client</artifactId>
-    <version>2.0.0</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 
 ```groovy
 // build.gradle
-implementation 'com.apialerts:client:2.0.0'
+implementation 'com.apialerts:client:1.1.0'
 ```
 
 ## Usage from Java
@@ -65,12 +65,43 @@ SendResult result = ApiAlertsJvm.sendFuture(new EventBuilder("Deploy complete").
 
 Yes, you still need a Kotlin dependency in your `pom.xml`. We still love you.
 
+## Dependency injection (Spring)
+
+Construct an injectable `ApiAlertsClient` with the `ApiAlertsJvm.client(...)` factory and register it as a bean:
+
+```java
+import com.apialerts.client.ApiAlertsClient;
+import com.apialerts.client.ApiAlertsJvm;
+
+@Bean
+ApiAlertsClient apiAlerts() {
+    return ApiAlertsJvm.client("your-api-key");
+}
+```
+
+Then inject it and send:
+
+```java
+class DeployNotifier {
+    private final ApiAlertsClient alerts;
+
+    DeployNotifier(ApiAlertsClient alerts) { this.alerts = alerts; }
+
+    void onDeploy() {
+        // fire-and-forget
+        alerts.send(new EventBuilder("Deploy complete").build(), null);
+        // awaitable (sendAsync is a Kotlin suspend fn, so use the bridge)
+        ApiAlertsJvm.sendFuture(alerts, new EventBuilder("Deploy complete").build());
+    }
+}
+```
+
 ## The honest answer
 
-If you're in a **pure Java** project without Kotlin, the interop is functional but not pretty. The recommended paths are:
+The Java surface is small but complete: `EventBuilder`, static `send`, the `CompletableFuture` bridge, and an injectable client. Recommended paths:
 
 - **Kotlin Multiplatform project** — use the SDK natively, it's what it's designed for
-- **Mixed Java/Kotlin project** — add the dependency, the fire-and-forget `send()` works cleanly
+- **Mixed Java/Kotlin project** — add the dependency, everything above works cleanly
 - **Pure Java backend** — the interop above works, or you can call the API directly with a single HTTP POST (it's really simple):
 
 ```bash
@@ -80,7 +111,7 @@ curl -X POST https://api.apialerts.com/event \
   -d '{"message": "Deploy complete"}'
 ```
 
-A dedicated Java SDK with `CompletableFuture`-based API is on the roadmap. Until then, the Kotlin SDK is your best bet.
+The `CompletableFuture` API and an injectable client now ship on the Kotlin Multiplatform artifact, so a separate Java package isn't needed - this is the Java path.
 
 ## Links
 
