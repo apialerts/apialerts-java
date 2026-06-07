@@ -1,8 +1,9 @@
 # API Alerts • Java
 
+[![Maven Central](https://img.shields.io/maven-central/v/com.apialerts/client)](https://central.sonatype.com/artifact/com.apialerts/client)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-[API Alerts](https://apialerts.com) • [GitHub](https://github.com/apialerts)
+[Maven Central](https://central.sonatype.com/artifact/com.apialerts/client) • [GitHub](https://github.com/apialerts) • [API Alerts](https://apialerts.com)
 
 ---
 
