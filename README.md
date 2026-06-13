@@ -16,13 +16,13 @@ There's no separate `apialerts-java` artifact. But you don't need one — the **
 <dependency>
     <groupId>com.apialerts</groupId>
     <artifactId>client</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
 </dependency>
 ```
 
 ```groovy
 // build.gradle
-implementation 'com.apialerts:client:1.1.0'
+implementation 'com.apialerts:client:1.2.0'
 ```
 
 ## Usage from Java
@@ -46,6 +46,18 @@ ApiAlerts.send(new EventBuilder("Deploy complete")
     .tags(List.of("CI/CD", "Java"))
     .build());
 ```
+
+### Attaching `data`
+
+Pass the `data` field a plain `Map`:
+
+```java
+ApiAlerts.send(new EventBuilder("New user signed up")
+    .data(Map.of("plan", "pro", "count", 5))
+    .build());
+```
+
+Values are mapped to JSON heuristically (strings, numbers, booleans, nested maps/lists, null). For full control over the JSON shape, pass a `JsonObject` - it is itself a `Map`, so the same `.data(...)` accepts it.
 
 
 ## Awaitable sends from Java
